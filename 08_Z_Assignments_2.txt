@@ -1,0 +1,111 @@
+Your company is ready to move forward with using Docker to run their applications. However, they have some complex container apps that can take advantage of the cluster management and orchestration features of Docker swarm. You have been asked to stand up a simple Docker swarm cluster to be used for some initial testing. A set of servers has already been provisioned for this purpose. The swarm cluster should meet the following criteria:
+
+One Swarm manager.
+Two worker nodes.
+All nodes should use Docker CE version 5:18.09.5~3-0~ubuntu-bionic.
+Both worker nodes should be joined to the cluster.
+Any non-root user should be able to run docker commands on all three servers.
+
+[NOTE: Write the series of commands to achieve above in this file below the question scenario with documentation]
+
+Good luck!
+
+To create Swarm Manager:
+===========================
+
+1. Open a terminal and ssh into the machine where we want to run your manager node. That machine will be named as manager1. 
+	If we use Docker Machine, we can connect to it via SSH using the following command:
+
+	$ docker-machine ssh manager1
+	
+	Run the following command to create a new swarm:
+
+	$ docker swarm init --advertise-addr <MANAGER-IP>
+	
+To create and add two worker nodes.
+===================================
+
+1. Open a terminal and ssh into the machine where you want to run a worker node. This machine will be named as worker1.
+
+	Run the command produced by the docker swarm init output from the Create a swarm tutorial step to create a worker node joined to the existing swarm:
+
+	$ docker swarm join \
+  --token  SWMTKN-1-49nj1cmql0jkz5s954yi3oex3nedyz0fb0xx14ie39trti4wxv-8vxv8rssmk743ojnwacrr2e7c \IPaddress
+
+	This node joined a swarm as a worker1.
+Also, we can run the below command on a manager node to retrieve the join command for a worker:
+
+	$ docker swarm join-token worker	
+	
+Follow the same instruction to create worker2 and the below output can be seen when ran 'docker node ls' command.
+	
+ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
+03g1y59jwfg7cf99w4lt0f662    worker2   Ready   Active
+9j68exjopxe7wfl6yuxml7a7j    worker1   Ready   Active
+dxn1zf6l61qsb1josjja83ngz *  manager1  Ready   Active        Leader
+
+All nodes should use Docker CE version 5:18.09.5~3-0~ubuntu-bionic.
+===================================================================
+
+Install Docker CE on all the nodes;
+
+$ sudo apt install docker-ce=5:18.09.2~3-0~ubuntu-bionic docker-ce-cli=5:18.09.2~3-0~ubuntu-bionic containerd.io
+
+Any non-root user should be able to run docker commands on all three servers.
+===============================================================================
+
+1. Create a docker group:
+
+	$ sudo groupadd docker
+	
+2. Add users to the docker group:
+
+	$ sudo usermod -aG docker [non-root user]
+	
+Execution:
+==========
+[root@manager ~]# docker swarm init --advertise-addr 172.31.63.39
+Swarm initialized: current node (s36rgeutvawzw134w1l7vv8l6) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-379w7n87ooxauo83etov6hoh53lyqmgwwdobp0i9kb8jt3woxl-499vq1hzmm9bzv4q9njoxx4np 172.31.63.39:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+Perform the below on all the worker nodes so that they can join to the cluster :
+
+worker1:
+docker swarm join --token SWMTKN-1-379w7n87ooxauo83etov6hoh53lyqmgwwdobp0i9kb8jt3woxl-499vq1hzmm9bzv4q9njoxx4np 172.31.63.39:2377
+worker2:
+docker swarm join --token SWMTKN-1-379w7n87ooxauo83etov6hoh53lyqmgwwdobp0i9kb8jt3woxl-499vq1hzmm9bzv4q9njoxx4np 172.31.63.39:2377
+
+Post Execution you will get data as per below:
+
+[root@manager ~]# docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+s36rgeutvawzw134w1l7vv8l6 *   manager             Ready               Active              Leader              19.03.10
+q0dc8d83gl054vk8skms3cjie     worker1             Ready               Active                                  19.03.10
+u3vhef33pkmpea182agxhy2v6     worker2             Ready               Active                                  19.03.10
+[root@manager ~]#
+
+
+Any non-root user should be able to run docker commands on all three servers. ::
+Please add the user to the docker group so that he can execute the docker commands.
+Solution:
+gpasswd -a assignment docker
+Adding user assignment to group docker
+
+
+
+
+
+
+
+
+
+
+
+
+

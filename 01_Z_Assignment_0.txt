@@ -1,0 +1,355 @@
+Assignment
+
+NOTE: Do not forget to see manual page using "--help" option in command when searching for options/commands for a particular task.
+
+1. Install Docker, either on your native OS or on a VM. Make sure it runs. Type "docker -v" to check if it's installed.
+
+If you can't install or configure Docker, you can use the online docker setup to do the assignment.
+Step1 Goto:- https://www.katacoda.com/courses/kubernetes/playground
+Step2 Click on "continue" button on the left panel
+Step3 Click on "launch.sh" button on the left panel
+Step4 From the right panel use the top console to execute below command:-
+		docker -v
+
+
+Try below commands for help
+	docker --help  ---> This command shows all available options and commands to work with images and containers
+	docker image --help ---> This command shows all the avaialble options and commands to work with docker images
+	docker container --help ---> This command shows alsl the avaialble options and commands to work with docker containers
+
+NOTE:- DO NOT TRY TO USE INTERNET TO SOLVE ASSIGNMENT, BETTER USE THE ABOVE --help OPTION TO SEE THE MANUAL OF ANY PARTICULAR COMMAND AND FIGURE OUT THE SOLUTIONS ON YOUR OWN.
+
+Steps that followed to install Docker:
+
+1. Created EC2 instance in AWS 
+2. Updated  the package and played with the below commands;
+
+	yum install docker -y
+	systemctl enable docker 
+	systemctl restart docker 
+3. started the Docker service - sudo service docker start
+3. Docker was up and running successfully 
+
+
+2. Find a image from dockerhub of your choice(recommeded: nginx), don't use browser, pull the official image from dockerhub
+
+	Ran the command - docker run nginx 
+	It started pulling nginx from the docker hub/library since it was unable to find the image locally. 
+	The container can be checked using command - docker ps -a 
+	Also, we can check the image using the command - docker image 
+
+3. List all the available images in your machine/vm, make sure you see recently pulled image in the list.
+
+	docker pull image ( Multilpe images)
+	docker images -a - It will display the list of all the recent images 
+	
+		
+4. Find out the "Full" ImageId of the image that you pulled and write it below.
+
+	[root@dockers docker]# docker pull centos	
+	[root@dockers docker]# docker images
+	REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+	centos              latest              470671670cac        4 months ago        237MB
+	
+	
+	
+
+5. Create a container of your image 
+
+	[root@dockers docker]# docker run -it --name dvs1 centos
+	Unable to find image 'centos:latest' locally
+	latest: Pulling from library/centos
+	8a29a15cefae: Pull complete
+	Digest: sha256:fe8d824220415eed5477b63addf40fb06c3b049404242b31982106ac204f6700
+	Status: Downloaded newer image for centos:latest
+	[root@8d6fcf7891f1 /]# cat /etc/redhat-release
+	CentOS Linux release 8.1.1911 (Core)
+	[root@dockers docker]# docker ps
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+	[root@dockers docker]# docker ps -a
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+	8d6fcf7891f1        centos              "/bin/bash"         5 minutes ago       Exited (0) 3 minutes ago                       dvs1
+		
+
+6. List all the running containers
+
+	[root@dockers docker]# docker start dvs1
+	dvs1
+	[root@dockers docker]# docker ps
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+	8d6fcf7891f1        centos              "/bin/bash"         6 minutes ago       Up 2 seconds                            dvs1
+	[root@dockers docker]# docker start dvs2
+	dvs2
+	[root@dockers docker]# docker start dvs3
+	dvs3
+	[root@dockers docker]#
+	[root@dockers docker]# docker ps
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+	71625ac2f350        centos              "/bin/bash"         3 minutes ago       Up 4 seconds                            dvs3
+	9588ba9793e3        centos              "/bin/bash"         4 minutes ago       Up 7 seconds                            dvs2
+	8d6fcf7891f1        centos              "/bin/bash"         7 minutes ago       Up 28 seconds                           dvs1
+	
+	
+	
+7. List all the running and stopped containers
+
+	This can be seen using below command:
+	1. docker start container ID
+	2. docker stop container ID
+	3. docker ps -a 
+	
+	[root@ip-172-31-39-252 ~]# docker start f2aa9897ad9e
+	f2aa9897ad9e
+	[root@ip-172-31-39-252 ~]# docker ps -a
+	CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
+	f2aa9897ad9e        httpd               "httpd-foreground"       7 minutes ago       Up 2 minutes                80/tcp              Apache
+	a1bac475a826        nginx               "nginx -g 'daemon of…"   25 minutes ago      Exited (0) 22 minutes ago                       musing_cray
+	ec79944c7145        d4e60c8eb27a        "httpd-foreground"       36 minutes ago      Exited (0) 30 minutes ago                       apache
+
+	
+8. Find out the "Full" containerId of the container and write it below.
+
+	[root@dockers docker]# docker run -it --name dvs1 centos
+	Unable to find image 'centos:latest' locally
+	latest: Pulling from library/centos
+	8a29a15cefae: Pull complete
+	Digest: sha256:fe8d824220415eed5477b63addf40fb06c3b049404242b31982106ac204f6700
+	Status: Downloaded newer image for centos:latest
+	[root@dockers docker]# docker ps
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+	[root@dockers docker]# docker ps -a
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+	8d6fcf7891f1        centos              "/bin/bash"         5 minutes ago       Up 28 seconds                       	dvs1
+	
+	
+	
+9. Find out how many image layers are used to build this image.
+
+	  "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:ffc9b21953f4cd7956cdf532a5db04ff0a2daa7475ad796f1bad58cfbaf77a07",
+                "sha256:2a3864bf0abad092e46d1b9af07579e060f0dc6647733777506966bfac4e5220",
+                "sha256:4d7f420ed1cfe829b6594bccb9ae962b31d3f0b09f7241ff5f65b616eb64e506",
+                "sha256:91cd4594943819b101aceaef3f5f96e3280784daf2d21b1e36bff90c2ee3373a",
+                "sha256:50ed22113887f7c70a42a030e092e3643629da71c0b92d9f7dfae61a7b3cd64f"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+
+10. Get the Apache Tomcat 7 server image from the docker hub.
+	[root@ip-172-31-39-252 ~]# docker pull httpd
+	Using default tag: latest
+	latest: Pulling from library/httpd
+	afb6ec6fdc1c: Pull complete
+	5a6b409207a3: Pull complete
+	41e5e22239e2: Pull complete
+	9829f70a6a6b: Pull complete
+	3cd774fea202: Pull complete
+	Digest: sha256:db9c3bca36edb5d961d70f83b13e65e552641e00a7eb80bf435cbe9912afcb1f
+	Status: Downloaded newer image for httpd:latest
+	docker.io/library/httpd:latest
+	[root@ip-172-31-39-252 ~]# docker images
+	REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+	httpd               latest              d4e60c8eb27a        10 days ago         166MB
+	[root@ip-172-31-39-252 ~]#
+
+
+11. Run the Apache Tomcat 7, I mean create a container of Apache Tomcat.
+
+	docker run -d -p 8080:8080 --name mytomcat tomcat:7.0 
+
+[root@ip-172-31-17-89 ~]# docker run -d -p 8080:8080 --name mytomcat tomcat:7.0
+Unable to find image 'tomcat:7.0' locally
+7.0: Pulling from library/tomcat
+376057ac6fa1: Pull complete
+5a63a0a859d8: Pull complete
+496548a8c952: Pull complete
+2adae3950d4d: Pull complete
+0a297eafb9ac: Pull complete
+51607e1c215b: Pull complete
+f7c02da203f1: Pull complete
+606aeb5a1d3f: Pull complete
+3d23c3193971: Pull complete
+6a63bc5a9d79: Pull complete
+Digest: sha256:0b1f567cd5bbfae19f2749ad998eced7bce46d5589f4b8a471390c25c09484b5
+Status: Downloaded newer image for tomcat:7.0
+68d7903fa74c86722d06095ea07385e4be0c14c003eeafd72ecc5abfae8ed9d9
+[root@ip-172-31-17-89 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS                   PORTS                                                                                          NAMES
+68d7903fa74c        tomcat:7.0          "catalina.sh run"        16 seconds ago       Up 15 seconds            0.0.0.0:8080->80                                                                      80/tcp   mytomcat
+
+
+
+12. Find out what is the IP Address of the Apache Tomcat Container that it is running on
+
+[root@ip-172-31-17-89 ~]# docker inspect 68d7903fa74c | grep IPAddress
+            "SecondaryIPAddresses": null,
+            "IPAddress": "172.17.0.2",
+                    "IPAddress": "172.17.0.2",
+[root@ip-172-31-17-89 ~]#
+
+13. Which Port it is using?
+
+[root@ip-172-31-17-89 ~]# docker inspect 68d7903fa74c
+
+	 "Ports": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+
+
+14. Try to access the Tomcat's home page from your machine/vm.
+
+curl http://localhost:8080
+
+
+
+15. What is the disk size of Apache Tomcat image?
+
+docker image ls | grep tomcat or docker images | grep tomcat
+
+16. Find out list of all environment variables that is configured for tomcat image, can you see JAVA_HOME and CATALINA_HOME? What did you notice about it?
+
+[root@ip-172-31-17-89 ~]# docker inspect 68d7903fa74c
+
+  "Env": [
+                "PATH=/usr/local/tomcat/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "JAVA_HOME=/usr/local/openjdk-8",
+                "JAVA_VERSION=8u252",
+                "JAVA_BASE_URL=https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u252-b09/OpenJDK8U-jdk_",
+                "JAVA_URL_VERSION=8u252b09",
+                "CATALINA_HOME=/usr/local/tomcat",
+                "TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/native-jni-lib",
+                "LD_LIBRARY_PATH=/usr/local/tomcat/native-jni-lib",
+                "GPG_KEYS=05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 713DA88BE50911535FE716F5208B0AB1D63011C7 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23",
+                "TOMCAT_MAJOR=7",
+                "TOMCAT_VERSION=7.0.104",
+                "TOMCAT_SHA512=d14c4dd0b9f360030805ed6f59dacb212b86c90bcbc4e381364001cf97b12b581c880bfd8764cf12913864c825164b10d654752d20700d029f207b82f5bcd858"
+            ],
+
+17. Find out which port is exposed for tomcat?
+
+docker inspect 2ce73c4841193dfe9166ac14514f02be5149f2ceb324e02b73fc4652849100fd | grep ExposedPort
+
+
+18. Run multiple conntainers of tomcat on different port and access it's home page.
+
+    docker run -itd -p 8001:8080 --name webapp1 tomcat:7.0	
+    docker run -itd -p 8002:8080 --name webapp2 tomcat:7.0
+    docker run -itd -p 8003:8080 --name webapp3 tomcat:7.0	
+    docker run -itd -p 8004:8080 --name webapp4 tomcat:7.0
+
+19. Pull ubuntu os from dockerhub, try to pull 2 images of ubuntu, Except the latest one.
+
+	docker pull ubuntu:19.10
+    docker pull ubuntu:18.10
+
+20. Run the container of ubuntu in attached mode.
+
+docker run -p 8005:8080 --name Ubantu ubuntu:latest
+
+21. Run the container of another ubuntu in detached mode.
+
+docker run -d -p 8006:8080 --name Ubuntu ubuntu:latest
+
+
+22. Check how many ubuntu containers are running and stopped
+
+docker ps -a | grep ubuntu
+
+23. Is the tomcat container running? If no, start one.
+
+docker ps -a
+docker start containerId
+
+
+24. Check the logs, generated by tomcat container(don't forget to make request to tomcat's home page to see the log).
+
+docker logs -f containerId
+
+
+25. Check if ubuntu conatiner is running? If no, start one in attached mode to the terminal.
+
+docker start containerId
+
+26. Login as root user in ubuntu container
+
+docker exec --user root -it 42d1c27fbb30 /bin/bash
+
+
+27. Create a file with any name in root directory
+
+vim Dockerfile
+
+
+28. Install software of your choice in ubuntu container using "apt-get install"
+
+apt-get install tree
+
+
+29. Now exit the ubuntu shell, are you back to your host machine, if not, come back to the host machine.
+
+exit
+
+30. Check if the ubuntu container is running.
+
+docker ps | grep ubuntu
+
+
+31. Create a new ubuntu container out of the same image as that previous container in attached mode.
+
+docker run -d --name myubuntu -p 8081:8080 ubuntu:19.10
+
+
+32. Login as a root user
+
+[ec2-user@ip-172-31-17-89 ~]$ sudo su -
+Last login: Tue May 2 14:15:59 UTC 2020 on pts/0
+[root@ip-172-31-17-89 ~]# 
+  
+  
+33. Check if you can see the file created in previous container, you will not see the file as well as software that you installed in the previous container. Now kill this Container.
+
+docker container kill containername
+
+34. Do you have the previous ubuntu container where you created the file and installed the software? If no reapeat step 25 to 29.
+
+Yes
+
+
+35. Create an Image out of the existing container.
+
+
+36. Now Create a Container out of this image and login into it to see if you can see the file and software installed by you in the previous container.
+37. Do you have running tomcat container? If yes, Stop it and kill all tomcat container.
+38. Create an index.html file with following code in it:-
+	<h1>This is Tomcat Container</h1>
+Now, Start a tomcat container in such a way that on hitting its URL for home page it should show the above html page.
+39. type below command:-
+	docker images --help
+Now, try to run command that proves the concept of following three options:-
+1. -a
+2. -f
+3. -q
+
+write atleast 1 command using each option above and prove their concepts as described in the --help.
+
+
+40. type below command:-
+	docker ps --help
+Now, try to run command that proves the concept of following six options:-
+1. -a
+2. -f
+3. -q
+4. -n
+5. -l
+6. -s
+
